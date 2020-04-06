@@ -135,6 +135,7 @@ server.put('/api/users/:id', (req, res) => {
   if (index === -1) {
     res.status(404).json({ 'message': 'The user with the specified ID does not exist.' });
   } else {
+    console.log(userInfo);
     users[index] = userInfo;
     res.status(200).json(users);
   }
