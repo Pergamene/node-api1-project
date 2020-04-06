@@ -8,6 +8,16 @@ let users = [
     name: 'Jane Doe',
     bio: "Not Tarzan's Wife, another Jane",
   },
+  {
+    id: 2,
+    name: "Tarzan",
+    bio: "Yes that Tarzan"
+},
+{
+    id: 3,
+    name: "Tarzan Jr",
+    bio: "Tarzan's son"
+}
 ];
 
 // middlware
@@ -21,7 +31,7 @@ server.use(express.json());
  *    return `{ errorMessage: "The users information could not be retrieved." }`
  */
 server.get('/api/users', (req, res) => {
-
+  res.status(200).json(users);
 });
 
 /**
@@ -34,7 +44,15 @@ server.get('/api/users', (req, res) => {
  *    return `{ errorMessage: "The user information could not be retrieved." }`
  */
 server.get('/api/users/:id', (req, res) => {
+  const id = parseInt(req.params.id);
 
+  const user = users.find(user => user.id === id);
+
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404).json({ 'message': 'The user with the specified ID does not exist.' });
+  }
 });
 
 /**
@@ -53,6 +71,16 @@ server.get('/api/users/:id', (req, res) => {
  */
 server.post('/api/users', (req, res) => {
   const userInfo = req.body;
+
+  if (!userInfo.name || !userInfo.bio) {
+    res.status(400).json({ 'errorMessage': 'Please provide name and bio for the user.' });
+  } else {
+    const user = users.find(user => user.id === userInfo.id);
+    if (!user) {
+      users.push(userInfo);
+    }
+    res.status(201).json(users);
+  }
 });
 
 /**
@@ -65,7 +93,16 @@ server.post('/api/users', (req, res) => {
  *    return `{ errorMessage: "The user could not be removed" }`
  */
 server.delete('/api/users/:id', (req, res) => {
+  const id = parseInt(req.params.id);
 
+  const newUsers = users.filter(user => user.id !== id);
+
+  if (newUsers.length === users.length) {
+    res.status(404).json({ 'message': 'The user with the specified ID does not exist.' });
+  } else {
+    users = newUsers;
+    res.status(200).json(users);
+  }
 });
 
 /**
@@ -86,7 +123,21 @@ server.delete('/api/users/:id', (req, res) => {
  *    return user document
  */
 server.put('/api/users/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const userInfo = req.body;
 
+  if (!userInfo.name || !userInfo.bio) {
+    res.status(400).json({ 'errorMessage': 'Please provide name and bio for the user.' });
+  }
+
+  const index = users.findIndex(user => user.id === id);
+
+  if (index === -1) {
+    res.status(404).json({ 'message': 'The user with the specified ID does not exist.' });
+  } else {
+    users[index] = userInfo;
+    res.status(200).json(users);
+  }
 });
 
 const port = 5000;
