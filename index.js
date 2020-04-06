@@ -81,9 +81,11 @@ server.post('/api/users', (req, res) => {
   try {
     const userInfo = req.body;
   
+    console.log("userInfo", userInfo);
+
     if (!userInfo.name || !userInfo.bio) {
-    } else {
       res.status(400).json({ 'errorMessage': 'Please provide name and bio for the user.' });
+    } else {
       const user = users.find(user => user.id === userInfo.id);
       if (!user) {
         users.push(userInfo);
